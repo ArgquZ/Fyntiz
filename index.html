@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fyntiz</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ====== LATAUSNÄYTTÖ ====== */
+    #loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #101010, #000000);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease;
+    }
+
+    /* === 3D RING EFFECT === */
+    .loader-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 6px solid transparent;
+      border-top: 6px solid #0ff;
+      border-left: 6px solid #0ff;
+      animation: rotate3d 1.2s linear infinite;
+      box-shadow: 0 0 20px #0ff;
+      transform: rotate3d(1, 1, 0, 45deg);
+      margin-bottom: 30px;
+    }
+
+    @keyframes rotate3d {
+      0% { transform: rotate3d(1, 1, 0, 0deg); }
+      100% { transform: rotate3d(1, 1, 0, 360deg); }
+    }
+
+    /* === RGB LIUKUVÄRI-TEKSTI === */
+    .loader-text {
+      font-size: 26px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #ff00ff, #00ffff, #00ff00, #ffff00, #ff00ff);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rgbFlow 6s linear infinite;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes rgbFlow {
+      0% { background-position: 0%; }
+      100% { background-position: 300%; }
+    }
+
+    .info-text {
+      color: #888;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    /* ====== CHATTISISÄLTÖ ====== */
+    #main-content {
+      display: none;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    #chat {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .msg {
+      margin: 10px 0;
+    }
+
+    .user {
+      color: #0f0;
+    }
+
+    .bot {
+      color: #0ff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== LATAUSANIMAATIO ====== -->
+  <div id="loader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">Fyntiz käynnistyy...</div>
+    <div class="info-text">Kirjoita <strong>lopeta</strong> lopettaaksesi keskustelun.</div>
+  </div>
+
+  <!-- ====== CHAT SISÄLTÖ ====== -->
+  <div id="main-content">
+    <div id="chat">
+      <h1>Tervetuloa Fyntizineen</h1>
+      <div id="messages"></div>
+      <input type="text" id="userInput" placeholder="Lähetä mulle viesti :D" />
+    </div>
+  </div>
+
+  <script>
+    // Näytä chat latauksen jälkeen
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const loader = document.getElementById("loader");
+        loader.style.opacity = "0";
+        document.getElementById("main-content").style.display = "block";
+        setTimeout(() => loader.style.display = "none", 800);
+      }, 2500);
+    });
+
+    // Chatbot logiikka
+    const input = document.getElementById('userInput');
+    const messages = document.getElementById('messages');
+
+    const vastaukset = [
+      "Mielenkiintoista, kerro lisää!",
+      "Aika jännää!",
+      "Eikö olekin?",
+      "En ole varma, mitä tarkoitat.",
+      "Mitä mieltä olla?",
+      "Hahhaa, hauska vitsi :DD",
+      "Mitä mieltä olet itse asiasta?",
+      "Onpa hauskaa keskustella!",
+      "Onko huomenna keskiviikko, vai ehkä tiistai?",
+      "Mun auto!",
+      "Joo, en tuu auttaa sua läksyissä :DD",
+      "No on se ihan kivaa.",
+      "Kiva kuulla!",
+      "No jos kerran on pakko.",
+      "KYLLÄ",
+      "Juu",
+      "Huomenna",
+      "Kiitos hyvää!",
+      "Kyllä kiitos.",
+      "No ei, ikävä kyllä.",
+      "Hauska fakta: tiesitkö, että sytkäri keksittiin ennen tulitikkuja?",
+      "En muista.",
+      "Moi, heippa!",
+      "Mitä kuuluu?",
+      "Eikun siis eilen.",
+      "No joo",
+      "Vaan jos.",
+      "Kyllä vain :D",
+      "Jos luulet, että minulla ei ole tunteita, olet oikeassa.",
+      "Hauska fakta: sitä ei oo D:",
+      "Hauska fakta: tiesitkö, että tää on fakta?",
+      "Terve vai terveellinen vai terve?",
+      "Onko 2+2=5?",
+      "Jos unohdat varjosi jääkaappiin, se muuttuu vähitellen lampuksi.",
+      "Naapurini kasvatti kissankarvoja ruukussa ja sanoi niitä pilvikasveiksi.",
+      "En voi tänään lähteä ulos – hiekka on liian vihreää.",
+      "Sipuli ei valehtele, se vain itkee totuuksia.",
+      "Kaikki on hyvin, kunhan kaktus ei ala puhua takaisin.",
+      "Tänään tuuli puhalsi suoraan mun ajatuksiin ja vei niistä osan lomalle.",
+      "Ainoa syy sille, miksi kengät ovat hiljaa, on se että ne tietävät liikaa.",
+      "Kun lunta sataa vaakasuoraan, marsut alkavat miettiä politiikkaa.",
+      "Tänään join vettä väärinpäin ja aloin ymmärtää kissoja.",
+      "Älä ikinä luota jäätelöön, jos se ei sula surusta.",
+      "Päivä alkoi ihan hyvin, kunnes kengät alkoivat kuiskia.",
+      "Joku varasti mun ajatukset ja palautti ne siivottuina.",
+      "Hiekkapaperi tietää salaisuutesi, mutta ei kerro niitä lampaille.",
+      "Kivet puhuvat, mutta vain jos tarjoat niille popcornia.",
+      "Muovi ei osaa uida, ellei sille opeta ruotsia.",
+      "Kalenteri söi mun aikataulun ja nyt oon jääkaappi.",
+      "Aurinko vaihtoi salaa kengät mehiläisiin.",
+      "Ketsuppi valitsi minut presidentiksi unessa, jossa olin jääpalakone.",
+      "Harmaat sukat lentävät nopeammin, jos ne uskovat itseensä.",
+      "Aamupuuro unohti herätä, ja nyt se luulee olevansa lintu.",
+      "Jääkarhu toi postia, mutta kuori oli täynnä nallekarkkeja ja syyllisyyttä.",
+      "Lattialamppu opettelee viittomakieltä vain puhuakseen perunoille.",
+      "Ruoho kasvoi väärinpäin, koska maa oli päättänyt olla eri mieltä.",
+      "Vesi juoksi juoksukilpailussa, mutta hukkui omaan juoksuunsa.",
+      "Hevonen unohti juosta ja alkoi lentää unissaan.",
+      "Kirjekuori päätti muuttua lentokoneeksi ja lähti taivaalle ilman postia.",
+      "Kello päätti pysähtyä, jotta aika voisi levätä hetken.",
+      "Kirja avautui ja kertoi tarinan, joka muutti kaiken."
+    ];
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        const text = input.value.trim();
+        if (text === '') return;
+
+        showMessage("Sinä: " + text, 'user');
+
+        if (text.toLowerCase() === 'lopeta') {
+          showMessage("Fyntiz: Oli kiva jutella, moikka!", 'bot');
+          input.disabled = true;
+          return;
+        }
+
+        const vastaus = vastaukset[Math.floor(Math.random() * vastaukset.length)];
+        showMessage("Fyntiz: " + vastaus, 'bot');
+        input.value = '';
+      }
+    });
+
+    function showMessage(msg, cls) {
+      const div = document.createElement('div');
+      div.textContent = msg;
+      div.classList.add('msg', cls);
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+  </script>
+
+</body>
+</html>
