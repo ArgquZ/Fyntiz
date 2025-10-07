@@ -1,54 +1,71 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tekijä</title>
   <style>
     body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at center, #000000, #001a1a);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
+      color: #0ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow: hidden;
     }
 
-    .fade-in {
+    .animated-text {
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+      animation: zoomRotateColor 2.5s ease forwards;
+      transform-origin: center center;
+      margin: 0;
+    }
+
+    .small-text {
+      font-size: 1.2rem;
+      margin-top: 15px;
+      color: #33ffff;
       opacity: 0;
-      transform: translateY(30px);
-      animation: fadeInUp 1s ease forwards;
+      animation: fadeInText 1.5s ease forwards;
+      animation-delay: 2.5s;
     }
 
-    .fade-in:nth-child(2) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes fadeInUp {
-      to {
+    @keyframes zoomRotateColor {
+      0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-180deg);
+        color: #00ffff;
+        filter: drop-shadow(0 0 0 #0ff);
+      }
+      50% {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1.2) rotate(20deg);
+        color: #33ffff;
+        filter: drop-shadow(0 0 10px #0ff);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        color: #0ff;
+        filter: drop-shadow(0 0 15px #0ff);
       }
     }
 
-    p {
-      margin: 10px 0;
-      font-size: 22px;
-    }
-
-    .small {
-      font-size: 14px;
-      color: #aaa;
+    @keyframes fadeInText {
+      to {
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
-  <p class="fade-in"><strong>Tämän sivun on tehnyt ArgquZ</strong></p>
-  <p class="fade-in small">© 2025 - ArgquZ</p>
+  <h1 class="animated-text">Tämän sivun on tehnyt ArgquZ</h1>
+  <p class="small-text">© 2025 - ArgquZ</p>
 </body>
 </html>
